@@ -27,14 +27,12 @@ def check_credentials(username, password):
         ldapClient.simple_bind_s(ldap_username, ldap_password)
     except ldap.INVALID_CREDENTIALS:
         ldapClient.unbind()
-        logging.error('Wrong username or password')
-        return 'Wrong username or password'
-    except ldap.SERVER_DOWN:
-        logging.error('could not connect to AD server')
-        return 'could not connect to AD server'
+        print 'reject', 'Wrong username or password'
+    except ldap.SERVER_DOWN as e:
+        print 'reject' + 'could not connect to AD server' + str(e)
     except Exception as e:
         logging.error('exception: ' + str(e))
-        return 'ERROR: ' + str(e)
+        print 'reject ' + 'ERROR: ' + str(e)
     # all is well
 
     if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
