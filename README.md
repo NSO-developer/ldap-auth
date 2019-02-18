@@ -29,15 +29,13 @@ Standard input
 
 Standard output:
 * accept $groups $uid $gid $supplementary_gids $HOME
+    * $groups - space separated list of the group names the user is a member of.
+    * $uid - UNIX integer user id NSO should use as default when executing commands for this user.
+    * $gid - UNIX integer group id NSO should use as default when executing commands for this user.
+    * $supplementary_gids - (possibly empty) space separated list of additional UNIX group ids the user is also a member of.
 * reject message
 * abort message
   * Will not proceed with other authentication methods specified.
-
-##### Accept Attributes
-* $groups - space separated list of the group names the user is a member of.
-* $uid - UNIX integer user id NSO should use as default when executing commands for this user.
-* $gid - UNIX integer group id NSO should use as default when executing commands for this user.
-* $supplementary_gids - (possibly empty) space separated list of additional UNIX group ids the user is also a member of.
 
 ##### Test
 
@@ -48,7 +46,7 @@ accept "Administrators" "Sweden North" "Elvis is alive" 501 20 12 /tmp
 
 bash$> ./ldap-auth.py
 [bob;didntwin;]
-ERROR:root:could not connect to AD server
+reject ERROR:root:could not connect to AD server
 
 #### Contact
 
