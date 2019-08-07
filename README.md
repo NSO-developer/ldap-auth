@@ -11,7 +11,7 @@ The authentication server of choice must be configured for each user to return a
 
 NCS base configuration in ncs.conf must include an <external-authentication> xml stanza with in the <aaa> configuration to enable external authentication and provide the location of the authentication executable:
 
-#### prerequisite
+#### Prerequisite
 
 Needs python-ldap
 ```
