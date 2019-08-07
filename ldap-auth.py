@@ -11,7 +11,8 @@ def check_credentials(username, password):
     ldap_username = '%s@example.com' % username
     ldap_password = password
     base_dn = 'DC=example,DC=com'
-    ldap_filter = 'userPrincipalName=%s@example.com' % username
+    ldap_filter = 'sAMAccountName=%s' % username
+    #ldap_filter = 'userPrincipalName=%s@example.com' % username
     group_attr = 'memberOf'
     logging.debug('ldap server: ' + ldap_server)
     logging.debug('ldap_username: ' + ldap_username)
@@ -27,19 +28,19 @@ def check_credentials(username, password):
         ldapClient.simple_bind_s(ldap_username, ldap_password)
     except ldap.INVALID_CREDENTIALS:
         ldapClient.unbind()
-        print 'reject ', 'Wrong username or password'
+        print('reject ', 'Wrong username or password')
     except ldap.SERVER_DOWN as e:
-        print 'reject ' + 'Could not connect to LDAP server' + str(e)
+        print('reject ' + 'Could not connect to LDAP server' + str(e))
     except Exception as e:
         logging.error('exception: ' + str(e))
-        print 'reject ' + 'ERROR: ' + str(e)
+        print('reject ' + 'ERROR: ' + str(e))
     # all is well
 
     if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
         #List everything under the base DN.
         for name, attrs in ldapClient.search_s(base_dn, ldap.SCOPE_ONELEVEL, "objectclass=*", []):
             logging.debug('List base dn: ' + str(name))
-    logging.debug('User objects: ' + str(ldapClient.search_s(base_dn, ldap.SCOPE_SUBTREE, ldap_filter)[0][1].keys()))
+    logging.debug('User objects: ' + str(list(ldapClient.search_s(base_dn, ldap.SCOPE_SUBTREE, ldap_filter)[0][1].keys())))
 
     # get all user groups and store it in groupList
     groups = ldapClient.search_s(base_dn, ldap.SCOPE_SUBTREE, ldap_filter, group_attr.split())[0][1][group_attr]
@@ -57,7 +58,7 @@ def check_credentials(username, password):
     ' ,'.join(groupList)
     groupString = str(groupList).strip('[]').replace("'", "",).replace(",", "")
     #respond to NSO with accept and the list of group membership.
-    print "accept", groupString, "501 20 12 /tmp\n"
+    print("accept", groupString, "501 20 12 /tmp\n")
     return None
 
 
@@ -89,7 +90,7 @@ def get_credentials():
 
 """
 For testing purpouses run
-#> python adauth.py
+#> python ldap-auth.py
 and then type
 [username;password;]
 """

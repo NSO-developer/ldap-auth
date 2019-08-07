@@ -1,3 +1,5 @@
+Moved to https://github.com/NSO-developer/ldap-auth
+
 # ldap-auth
 NSO LDAP External Authentication example
 
@@ -9,6 +11,12 @@ The authentication server of choice must be configured for each user to return a
 
 NCS base configuration in ncs.conf must include an <external-authentication> xml stanza with in the <aaa> configuration to enable external authentication and provide the location of the authentication executable:
 
+#### prerequisite
+
+Needs python-ldap
+```
+pip install python-ldap
+```
 
 #### NSO Configuration updates to ncs.conf
 ```
@@ -47,7 +55,7 @@ accept "Administrators" "Sweden North" "Elvis is alive" 501 20 12 /tmp
 bash$> ./ldap-auth.py
 [bob;didntwin;]
 reject ERROR:root:could not connect to AD server
-
+```
 #### Contact
 
 Contact Hakan Niska <hniska@cisco.com> with any suggestions or comments. If you find any bugs please fix them and send me a pull request.
