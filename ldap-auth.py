@@ -48,10 +48,8 @@ def check_credentials(username, password):
     groupList = []
 
     #add all groups in to a list
-    #NSO cant handle groups with only numbers in it so remove those.
     for group in groups:
-        if not group.split(",")[0].split("=")[1].isdigit():
-            groupList.append('"' + group.split(",")[0].split("=")[1] + '"')
+        groupList.append('"' + group.split(",")[0].split("=")[1] + '"')
 
     #create one string out of that list.
     groupList = sorted(set(groupList))
