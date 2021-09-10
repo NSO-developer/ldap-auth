@@ -49,7 +49,7 @@ def check_credentials(username, password):
 
     #add all groups in to a list
     for group in groups:
-        groupList.append('"' + group.split(",")[0].split("=")[1] + '"')
+        groupList.append('"' + str(group).split(",")[0].split("=")[1] + '"')
 
     #create one string out of that list.
     groupList = sorted(set(groupList))
