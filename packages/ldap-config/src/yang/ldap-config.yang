@@ -1,0 +1,73 @@
+module ldap-config {
+
+  namespace "http://cisco.com/nso/ldap-config";
+  prefix ldap-config;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  description
+    "Model for config monitor actions and operational data";
+
+  revision 2022-07-01 {
+    description
+      "Initial revision.";
+  }
+
+  container ldap {
+    description "This is a container to hold various actions for the config monitor";
+
+    leaf server {
+      tailf:info
+        "URL address of LDAP server,
+         for example: ldap://ds.example.com";
+      type string;
+    }
+
+    container login {
+      presence "true";
+      tailf:cli-delete-when-empty;
+      tailf:info
+        "Specify username and password for the LDAP server login";
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-siblings;
+      }
+      tailf:cli-compact-syntax;
+
+      leaf username {
+        tailf:info
+          "LDAP login username";
+        tailf:cli-drop-node-name;
+        type string {
+          tailf:info
+            "WORD;;The login username";
+        }
+      }
+
+      leaf password {
+        tailf:cli-drop-node-name;
+        tailf:suppress-echo true;
+        type tailf:aes-256-cfb-128-encrypted-string {
+          tailf:info "WORD;;The login password";
+        }
+      }
+    }
+
+    leaf base-dn {
+      tailf:info
+        "Base DN (example: DC=example,DC=com)";
+      type string;
+    }
+
+  }
+}

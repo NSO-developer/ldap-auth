@@ -1,0 +1,11 @@
+.env
+.idea/
+README.ncs
+logs/
+ncs-cdb/
+ncs.conf
+packages/ldap-config/load-dir/
+scripts/command
+scripts/post-commit
+state/
+storedstate

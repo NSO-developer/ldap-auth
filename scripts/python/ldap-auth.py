@@ -3,6 +3,7 @@ import ldap
 import logging
 import sys
 from sys import stdin
+
 #Change to level=logging.DEBUG for more verbose logging
 logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 

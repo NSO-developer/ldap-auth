@@ -1,35 +1,15 @@
-Moved to https://github.com/NSO-developer/ldap-auth
-
-# ldap-auth
-NSO LDAP External Authentication example
-
-For more details on NCS interaction with external authentication servers see NCS User’s Guide,
-
-To interface with an external authentication entity, e.g. RADIUS or LDAP server, the user needs to provide an authentication script/program that will interact with the specific authentication method.  The purpose of the script is to not only solicit the remote authentication server for user/password acceptance but also to determine the groups that are associated with the user.  These groups are then returned from the script to NCS, prepended to any group information stored locally under the /aaa tree, and used by the NCS authorization process when checking rules.
-
-The authentication server of choice must be configured for each user to return accept/reject result and provide user and group identifiers in a format that is expected by the authentication script being provided.
-
-NCS base configuration in ncs.conf must include an <external-authentication> xml stanza with in the <aaa> configuration to enable external authentication and provide the location of the authentication executable:
-
-#### Prerequisite
-
-Needs python-ldap
-```
-pip install python-ldap
-```
-
-#### NSO Configuration updates to ncs.conf
-```
-<aaa>
-    <external-authentication>
-        <enabled>true</enabled>
-        <executable>path/to/ldap-auth.py</executable>
-    </external-authentication>
-</aaa>
-```
-
-#### NSO External Authentication Architecture
+#### NSO LDAP External Authentication Architecture
 ![architecture](img/external_auth_architecture.jpg)
+
+To interface with an external authentication entity, e.g. RADIUS or LDAP server,
+the user needs to provide an authentication script/program that will interact with the specific authentication method.
+The purpose of the script is to not only solicit the remote authentication server for user/password acceptance
+but also to determine the groups that are associated with the user.
+These groups are then returned from the script to NCS, prepended to any group information stored locally under the
+_/aaa_ tree, and used by the NCS authorization process when checking rules.
+
+The authentication server of choice must be configured for each user to return accept/reject result and provide user
+and group identifiers in a format that is expected by the authentication script being provided.
 
 #### External Authentication Script Input/Output
 Standard input
@@ -44,6 +24,26 @@ Standard output:
 * reject message
 * abort message
   * Will not proceed with other authentication methods specified.
+
+#### Prerequisite
+
+Need install Python package _python-ldap_:
+```
+pip install python-ldap
+```
+
+#### NSO Configuration
+
+NCS base configuration in _ncs.conf_ must include an _<external-authentication>_ clause with the _<aaa>_
+configuration to enable external authentication and provide the location of the authentication executable:
+```
+<aaa>
+    <external-authentication>
+        <enabled>true</enabled>
+        <executable>./scripts/python/ldap-auth.py</executable>
+    </external-authentication>
+</aaa>
+```
 
 ##### Test
 
