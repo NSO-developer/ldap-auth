@@ -79,7 +79,7 @@ def check_credentials(lc, user, user_password):
 
     user_dn = f'{lc.user_dn_prefix}={user},{lc.user_dn_group},{lc.base_dn}'
 
-    ldap_admin_dn = f'{lc.user_dn_prefix}={lc.admin_user},{lc.base_dn}'
+    ldap_admin_dn = f'cn={lc.admin_user},{lc.base_dn}'
     ldap_filter = f'(&({lc.user_dn_prefix}={user}))'
     ldap_attrs = ['memberOf', 'gidNumber', 'uidNumber']
     logging.debug(f'ldap admin dn: {ldap_admin_dn}')
@@ -124,10 +124,10 @@ def check_credentials(lc, user, user_password):
             group_list.append(str(group).split(",")[0].split("=")[1])
         group_str = ' '.join(group_list)
 
-        home_dir = os.path.join('/var/ncs/homes', group_list[0])
+        # home_dir = os.path.join('/var/ncs/homes', group_list[0])
 
         # response to NSO with accept and the list of group membership.
-        return f'accept "{group_str}" 65534 65534 {home_dir}'
+        return f'accept "{group_str}" 65534 65534 65534 $HOME'
     else:
         return f'reject User {user} is not a member of any group'
 
@@ -149,13 +149,10 @@ if __name__ == "__main__":
 
     # Read user credentials passed from NSO
     credentials = sys.stdin.readline()
-    username, password = parse_credentials(credentials)
+    username, password = parse_credentials(credentials)  # 'yanlab', 'cisco123'
     logger.info(f"Received from NSO: username={username}")
 
     response = check_credentials(ldap_config, username, password)
-
-    # response = 'accept "opera" 6553 6553 /tmp'
-    # response = "reject Authentication Failed"
 
     logger.info(f"Exiting with response: {response}")
     print(response)
