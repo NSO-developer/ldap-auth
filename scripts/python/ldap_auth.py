@@ -17,7 +17,7 @@ logging.basicConfig(filename=logname,
                     filemode='a+',
                     format='%(asctime)s.%(msecs)02d %(filename)s:%(lineno)s %(levelname)s: %(message)s',
                     datefmt='%d/%m/%Y %H:%M:%S',
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -124,8 +124,6 @@ def check_credentials(lc, user, user_password):
             group_list.append(str(group).split(",")[0].split("=")[1])
         group_str = ' '.join(group_list)
 
-        # home_dir = os.path.join('/var/ncs/homes', group_list[0])
-
         # response to NSO with accept and the list of group membership.
         return f'accept "{group_str}" 65534 65534 65534 $HOME'
     else:
@@ -150,7 +148,7 @@ if __name__ == "__main__":
     # Read user credentials passed from NSO
     credentials = sys.stdin.readline()
     username, password = parse_credentials(credentials)  # 'yanlab', 'cisco123'
-    logger.info(f"Received from NSO: username={username}")
+    logger.info(f"Received request to authenticate user with username={username}")
 
     response = check_credentials(ldap_config, username, password)
 

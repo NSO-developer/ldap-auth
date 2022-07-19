@@ -76,13 +76,13 @@ module ldap-config {
 
     leaf user-dn-prefix {
       tailf:info
-        "User Distinguished Name prefic(example: cn or uid)";
+        "User Distinguished Name prefix (example: cn or uid)";
       type string;
     }
 
     leaf user-dn-group {
       tailf:info
-        "User group Distinguished Name (example: ou=groups)";
+        "User organizational unit distinguished name (example: ou=people)";
       type string;
     }
   }
