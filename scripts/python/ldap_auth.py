@@ -122,10 +122,9 @@ def check_credentials(lc, user, user_password):
         group_list = []
         for group in user_groups:
             group_list.append(str(group).split(",")[0].split("=")[1])
-        group_str = ' '.join(group_list)
 
         # response to NSO with accept and the list of group membership.
-        return f'accept "{group_str}" 65534 65534 65534 $HOME'
+        return f"accept {' '.join(group_list)} 65534 65534 65534 $HOME"
     else:
         return f'reject User {user} is not a member of any group'
 
@@ -148,7 +147,7 @@ if __name__ == "__main__":
     # Read user credentials passed from NSO
     credentials = sys.stdin.readline()
     username, password = parse_credentials(credentials)  # 'yanlab', 'cisco123'
-    logger.info(f"Received request to authenticate user with username={username}")
+    logger.info(f"Requested authenticate user with: username={username}, password=********")
 
     response = check_credentials(ldap_config, username, password)
 

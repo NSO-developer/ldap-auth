@@ -20,11 +20,11 @@ The detail instruction on LDAP server and client installation and initial config
 [here](https://www.howtoforge.com/how-to-install-and-configure-openldap-phpldapadmin-on-ubuntu-2004/).
 
 To enable user authorization using LDAP the users must be grouped to certain groups and corresponding groups should be
-configured in NSO NACM. For NACM configuration details see documentation at
+configured in NSO AAA for authentication and NACM for access authorization. For NACM configuration details see documentation at
 `$NCS_DIR/doc/html/nso_admin_guide/ug.aaa.authorization.html` from your NSO installation. For openLDAP configuration,
 which allows associating users with authorization groups, please follow [these](README-Building-MemberOf-Module-in-LDAP.md)
 instructions. The [Microsoft Active Directory](https://ldapwiki.com/wiki/MemberOf) implementation of LDAP server
-has the _memberOf_ attribute enabled and does not need special configuration.
+has the _memberOf_ attribute enabled by default and does not need special configuration.
 >Note: It is assumed, that if the LDAP user is not associated with any authorization group (does not have attribute
 _memberOf_), the NSO access will be denied.
 
@@ -33,14 +33,18 @@ _memberOf_), the NSO access will be denied.
 #### NSO LDAP External Authentication Architecture
 ![architecture](resources/img/external_auth_architecture.jpg)
 
-To interface with an external authentication entity, e.g. RADIUS or LDAP server,
+To interface with an external authentication entity such as LDAP server,
 the user needs to provide an authentication script/program that will interact with the specific authentication method.
 The purpose of the script is not only soliciting the remote authentication server for user/password acceptance
-but also determining groups that are associated with the user. On the LDAP server a _memberOf_ attribute must be added
-to the database and groups with associated members must be created. This procedure in details described
-[here](https://blog.adimian.com/2014/10/15/how-to-enable-memberof-using-openldap/).
+but also determining groups that are associated with the user. On the LDAP server a _memberOf_ module must be added
+to the database and groups with associated members must be created.
 These groups then returned from the script to NSO, prepended to any group information stored locally under the
 _/aaa_ tree, and used by the NSO authorization process when checking _nacm_ rules.
+
+> For more details on how external authentication works, see the documentation at
+`$NCS_DIR/doc/html/nso_admin_guide/ug.aaa.External_authentication.html` from your NSO installation.
+Also, a presentation on access control with NSO is included in this repo:
+[NSO Access Control Role based and Resource based Access](resources/NSODevDays2020-NSO-Access-Control-Role-based-and-Resource-based-Access.pdf)
 
 #### NSO configuration
 
@@ -61,7 +65,7 @@ order of authentication methods in case multiple methods are enabled:
 External Authentication for NSO is accomplished by creating some executable script that NSO calls when user tries
 to login.  NSO simply passes user credentials to the script via standard input and expects an output statement in some
 expected formats. What is done in the external authentication script is irrelevant to NSO, all that matters is the output.
-For example, this script would work fine, but result in any provided credentials passing authentication and
+For example, this script would work just fine, but will result in any provided credentials passing authentication and
 being authorized for both admin and operator roles:
 
 ```python
@@ -70,9 +74,6 @@ being authorized for both admin and operator roles:
 accept = "accept admin oper 1004 1004 /tmp"
 print(accept)
 ```
-
-> For more details on how external authentication works, see the documentation at
-`$NCS_DIR/doc/html/nso_admin_guide/ug.aaa.External_authentication.html` from your NSO installation.
 
 When user creates SSH or Netconf or Restconf session with NSO server, it invokes the external authentication executable
 (in case of this package - Python script _ldap_auth.py_) and puts on the _stdin_ a message, which is then should be
@@ -131,7 +132,8 @@ Here we assume that this package is cloned to _$HOME_ directory and _ncs_ is run
    ```
    
 ### NSO LDAP configuration
-The package defines YANG model _ldap_config.yang_, which describes LDAP server communication settings. The model tree defined like this:
+The package defines YANG model _ldap_config.yang_, which describes LDAP server communication settings.
+The model tree defined like this:
 ```
 module: ldap-config
   +--rw ldap
