@@ -1,0 +1,12 @@
+.env
+.idea/
+README.ncs
+logs/
+ncs-cdb/
+ncs.conf
+packages/ldap-config/load-dir/
+scripts/command
+scripts/post-commit
+scripts/python/ext_auth_test.py
+state/
+storedstate

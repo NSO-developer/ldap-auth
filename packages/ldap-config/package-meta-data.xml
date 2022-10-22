@@ -1,0 +1,8 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>ldap-config</name>
+  <package-version>1.0</package-version>
+  <description>Generated Python package</description>
+  <ncs-min-version>5.3</ncs-min-version>
+
+  <!-- config monitor inspect config action -->
+</ncs-package>
