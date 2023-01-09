@@ -55,7 +55,7 @@ order of authentication methods in case multiple methods are enabled:
 <aaa>
     <external-authentication>
         <enabled>true</enabled>
-        <executable>./scripts/python/ldap-auth.py</executable>
+        <executable>./scripts/python/ldap_auth.py</executable>
     </external-authentication>
     <auth-order>external-authentication local-authentication pam</auth-order>
 </aaa>
