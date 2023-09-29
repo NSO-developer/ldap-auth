@@ -5,6 +5,9 @@ all:
 clean:
 	$(MAKE) -C packages/ldap-config/src clean
 
+start:
+	ncs --with-package-reload
+
 stop:
 	ncs --stop
 

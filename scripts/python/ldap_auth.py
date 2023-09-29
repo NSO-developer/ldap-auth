@@ -36,20 +36,20 @@ def get_ldap_config_details():
 
     # Create NCS connection to read ldap host details
     logger.info("Connecting to NSO to retrieve ldap configuration details")
-    m = ncs.maapi.Maapi()
-    m.start_user_session("admin", "system")
-    m.install_crypto_keys()
-    trans = m.start_read_trans()
-    root = ncs.maagic.get_root(trans)
+    with ncs.maapi.Maapi() as m:
+        with ncs.maapi.Session(m, 'admin', 'system'):
+            with m.start_read_trans() as trans:
+                m.install_crypto_keys()
+                root = ncs.maagic.get_root(trans)
 
-    # ldap Server Details
-    server = root.ldap.server
-    admin = root.ldap.login.username
-    secret = root.ldap.login.password
-    pswd = _ncs.decrypt(secret)
-    base_dn = root.ldap.base_dn
-    dn_prefix = root.ldap.user_dn_prefix
-    dn_group = root.ldap.user_dn_group
+                # ldap Server Details
+                server = root.ldap.server
+                admin = root.ldap.login.username
+                secret = root.ldap.login.password
+                pswd = _ncs.decrypt(secret)
+                base_dn = root.ldap.base_dn
+                dn_prefix = root.ldap.user_dn_prefix
+                dn_group = root.ldap.user_dn_group
 
     logging.debug(f'ldap server: {server}')
     logging.debug(f'ldap base_dn: {base_dn}')
