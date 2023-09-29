@@ -105,6 +105,15 @@ def check_credentials(lc, user, user_password):
         logging.error('Exception while binding to the LDAP server:\n' + str(err))
         return 'reject Exception while binding to LDAP server: ' + str(err)
 
+    # Verify username and password is valid
+    try:
+        ldap_client_user = ldap.initialize(lc.server_url)
+        ldap_client_user.set_option(ldap.OPT_REFERRALS, 0)
+        ldap_client_user.simple_bind_s(user, user_password)
+    except ldap.INVALID_CREDENTIALS as err:
+        ldap_client_user.unbind()
+        logging.error('LDAP Exception INVALID_CREDENTIALS:\n' + str(err))
+        return f'reject LDAP username or password wrong'
     # get all user attributes defined in ldap_attrs
     try:
         results = ldap_client.search_s(lc.base_dn, ldap.SCOPE_SUBTREE, ldap_filter, ldap_attrs)
