@@ -8,7 +8,7 @@ import ncs
 import _ncs
 
 # Setup logger
-logdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../logs")
+logdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "/var/log/ncs")
 logname = os.path.join(logdir, "ncs-python-ldap-auth.log")
 if not os.path.isdir(logdir):
     os.mkdir(logdir)
@@ -17,7 +17,7 @@ logging.basicConfig(filename=logname,
                     filemode='a+',
                     format='%(asctime)s.%(msecs)02d %(filename)s:%(lineno)s %(levelname)s: %(message)s',
                     datefmt='%d/%m/%Y %H:%M:%S',
-                    level=logging.INFO)
+                    level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -79,7 +79,7 @@ def check_credentials(lc, user, user_password):
 
     user_dn = f'{lc.user_dn_prefix}={user},{lc.user_dn_group},{lc.base_dn}'
 
-    ldap_admin_dn = f'cn={lc.admin_user},{lc.base_dn}'
+    ldap_admin_dn = f'{lc.admin_user}'
     ldap_filter = f'(&({lc.user_dn_prefix}={user}))'
     ldap_attrs = ['memberOf', 'gidNumber', 'uidNumber']
     logging.debug(f'ldap admin dn: {ldap_admin_dn}')
@@ -88,6 +88,7 @@ def check_credentials(lc, user, user_password):
     logging.debug(f'search attributes: {ldap_attrs}')
     try:
         # create ldap client
+        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
         ldap_client = ldap.initialize(lc.server_url)
     except ldap.SERVER_DOWN as err:
         logging.error('LDAP Exception SERVER DOWN:\n' + str(err))
@@ -117,6 +118,23 @@ def check_credentials(lc, user, user_password):
     if not results:
         return f"reject Wrong user dn ({user_dn})"
     user_attrs = results[0][1]
+    # Verify username and password is valid
+    logging.error(str(results[0][0]))
+    if user_password == "":
+        return "reject Empty password"
+    try:
+        ldap_client_user = ldap.initialize(lc.server_url)
+        ldap_client_user.set_option(ldap.OPT_REFERRALS, 0)
+        ldap_client_user.simple_bind_s(str(results[0][0]), user_password)
+    except ldap.INVALID_CREDENTIALS as err:
+        ldap_client_user.unbind()
+        logging.error('LDAP Exception INVALID_CREDENTIALS:\n' + str(err))
+        return f'reject LDAP username or password wrong'
+    except Exception as err:
+        ldap_client_user.unbind()
+        logging.error('Exception while binding to the LDAP server:\n' + str(err))
+        return 'reject Exception while binding to LDAP server: ' + str(err)
+
     if 'memberOf' in user_attrs:
         user_groups = user_attrs['memberOf']
         group_list = []
